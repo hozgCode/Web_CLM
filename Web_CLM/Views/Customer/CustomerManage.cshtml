@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "客户管理";
+}
+
+<link href="~/Scripts/fuelux/fuelux.css" rel="stylesheet" />
+<script src="~/Scripts/fuelux/fuelux.js"></script>
+<script src="~/Scripts/Customer/CustomerManage.js"></script>
+
+<section class="panel panel-default">
+    <header class="panel-heading"> 客户列表 </header>
+    <div class="row text-sm wrapper">
+        <div class="col-sm-5 m-b-xs">
+            <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus text"></i><span class="text"> 添加</span></button>
+            <button id="btndel" class="btn btn-sm btn-default"><i class="fa fa-times text"></i><span class="text"> 删除</span></button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped b-t b-light text-sm">
+            <thead>
+                <tr>
+                    <th width="20"><input type="checkbox"></th>
+                    <th class="th-sortable" data-toggle="class">
+                        客户编号
+                    </th>
+                    <th>客户姓名</th>
+                    <th>客户地址</th>
+                    <th>联系方式</th>
+                    <th>license管理</th>
+                    <th>客户端数量</th>
+                    <th>已注册数量</th>
+                    <th width="70"></th>
+                </tr>
+            </thead>
+            <tbody id="userlist"></tbody>
+        </table>
+    </div>
+    <footer class="panel-footer">
+        <div class="row">
+            <div class="col-sm-4 hidden-xs"></div>
+            <div class="col-sm-4 text-center">@*<small class="text-muted inline m-t-sm m-b-sm">showing 20-30 of 50 items</small>*@</div>
+            <div class="col-sm-4 text-right text-center-xs">
+                <ul id="Pagination" class="pagination pagination-sm m-t-none m-b-none"></ul>
+            </div>
+        </div>
+    </footer>
+</section>
+<input type="hidden" id="TotalCount" value="@ViewBag.TotalCount" />
+
+<!--增加客户弹层-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:600px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="closeModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h5 class="modal-title" id="myModalLabel">添加客户</h5>
+            </div>
+            <div class="modal-body" id="adddiv">
+                <form id="addData" data-validate="parsley" action="/Customer/AddCustomer" method="post" role="form">
+                    @Html.AntiForgeryToken()
+                    <section class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group pull-in clearfix">
+                                <div class="col-sm-6">
+                                    <label>客户编号</label>
+                                    <input type="text" class="form-control" data-required="true" data-maxlength="100" id="customerNumber" name="customerNumber">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>客户姓名</label>
+                                    <input type="text" class="form-control" data-required="true" data-maxlength="100" id="customerName" name="customerName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>客户地址</label>
+                                <input type="text" class="form-control" data-required="true" data-maxlength="200" id="customerAddress" name="customerAddress">
+                            </div>
+                            <div class="form-group">
+                                <label>联系方式</label>
+                                <input type="text" class="form-control" data-required="true" data-maxlength="100" id="customerContact" name="customerContact">
+                            </div>
+                            <div class="form-group pull-in clearfix">
+                                <div class="col-sm-6">
+                                    <label>购买客户端数量</label>
+                                    <input type="text" class="form-control" data-required="true" id="licenceCount" name="licenceCount">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>已注册使用的数量</label>
+                                    <input type="text" class="form-control" data-required="true" id="usedCount" name="usedCount">
+                                </div>
+                            </div>
+                            <div class="checkbox">
+                                <label class="checkbox-custom">
+                                    <input type="hidden" id="islicenseVal" name="islicense" value="false" />
+                                    <input type="checkbox" id="islicense" name="iscklicense">
+                                    <i class="fa fa-fw fa-square-o checked"></i>
+                                    <span id="stateShow"> 是否进行license管理</span>
+                                </label>
+                            </div>
+                        </div>
+                        <footer class="panel-footer text-right bg-light lter">
+                            <button type="submit" class="btn btn-success btn-s-xs">保存</button>
+                        </footer>
+                    </section>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--增加客户弹层结束-->
+<!--修改客户弹层-->
+<div class="modal fade" id="upModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:600px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="closeUpModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h5 class="modal-title" id="myModalLabel">编辑客户</h5>
+            </div>
+            <div class="modal-body" id="adddiv">
+                <form id="upData" data-validate="parsley" action="/Customer/UpdateCustomer" method="post" role="form">
+                    <section class="panel panel-default">
+                        <div class="panel-body">
+                            <input type="hidden" id="uid" name="ID" />
+                            <div class="form-group pull-in clearfix">
+                                <div class="col-sm-6">
+                                    <label>客户编号</label>
+                                    <input type="text" class="form-control" data-required="true" data-maxlength="100" id="customerNumber" name="customerNumber" readonly>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>客户姓名</label>
+                                    <input type="text" class="form-control" data-required="true" data-maxlength="100" id="customerName" name="customerName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>客户地址</label>
+                                <input type="text" class="form-control" data-required="true" data-maxlength="200" id="customerAddress" name="customerAddress">
+                            </div>
+                            <div class="form-group">
+                                <label>联系方式</label>
+                                <input type="text" class="form-control" data-required="true" data-maxlength="100" id="customerContact" name="customerContact">
+                            </div>
+                            <div class="form-group pull-in clearfix">
+                                <div class="col-sm-6">
+                                    <label>购买客户端数量</label>
+                                    <input type="text" class="form-control" data-required="true" id="licenceCount" name="licenceCount">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>已注册使用的数量</label>
+                                    <input type="text" class="form-control" data-required="true" id="usedCount" name="usedCount">
+                                </div>
+                            </div>
+                            <div class="checkbox">
+                                <label class="checkbox-custom">
+                                    <input type="hidden" id="islicenseVal" name="islicense" value="" />
+                                    <input type="checkbox" id="islicense" name="iscklicense">
+                                    <i class="fa fa-fw fa-square-o checked"></i>
+                                    <span id="stateShow"> 是否进行license管理</span>
+                                </label>
+                            </div>
+                        </div>
+                        <footer class="panel-footer text-right bg-light lter">
+                            <button type="submit" class="btn btn-success btn-s-xs">保存</button>
+                        </footer>
+                    </section>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改客户弹层结束-->

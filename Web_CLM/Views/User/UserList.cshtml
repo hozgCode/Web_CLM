@@ -1,0 +1,134 @@
+﻿@{
+    ViewBag.Title = "用户管理";
+}
+
+<link href="~/Scripts/fuelux/fuelux.css" rel="stylesheet" />
+<script src="~/Scripts/fuelux/fuelux.js"></script>
+<script src="~/Scripts/User/UserList.js"></script>
+
+<section class="panel panel-default">
+    <header class="panel-heading"> 用户列表 </header>
+    <div class="row text-sm wrapper">
+        <div class="col-sm-5 m-b-xs">
+            <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus text"></i><span class="text"> 添加</span></button>
+            <button id="btndel" class="btn btn-sm btn-default"><i class="fa fa-times text"></i><span class="text"> 删除</span></button>
+            @*<button class="btn btn-default" id="btn-1" href="#btn-1" data-toggle="class:btn-success"><i class="fa fa-plus-square text"></i><span class="text">添加</span><i class="fa fa-check text-active"></i><span class="text-active">Success</span></button>*@
+            @*<button class="btn btn-sm btn-default" data-toggle="modal" data-target="#myModal">添加</button>*@
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped b-t b-light text-sm">
+            <thead>
+                <tr>
+                    <th width="20"><input type="checkbox"></th>
+                    <th class="th-sortable" data-toggle="class">
+                        帐号
+                        <span class="th-sort">
+                            <i class="fa fa-sort-down text"></i>
+                            <i class="fa fa-sort-up text-active"></i>
+                            <i class="fa fa-sort"></i>
+                        </span>
+                    </th>
+                    <th>用户名</th>
+                    <th>是否管理员</th>
+                    <th>登录时间</th>
+                    <th width="70"></th>
+                </tr>
+            </thead>
+            <tbody id="userlist"></tbody>
+        </table>
+    </div>
+    <footer class="panel-footer">
+        <div class="row">
+            <div class="col-sm-4 hidden-xs"></div>
+            <div class="col-sm-4 text-center">@*<small class="text-muted inline m-t-sm m-b-sm">showing 20-30 of 50 items</small>*@</div>
+            <div class="col-sm-4 text-right text-center-xs">
+                <ul id="Pagination" class="pagination pagination-sm m-t-none m-b-none"></ul>
+            </div>
+        </div>
+    </footer>
+</section>
+<input type="hidden" id="TotalCount" value="@ViewBag.TotalCount" />
+
+<!--增加用户弹层-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:600px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="closeModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h5 class="modal-title" id="myModalLabel">添加用户</h5>
+            </div>
+            <div class="modal-body" id="adddiv">
+                <form id="addData" data-validate="parsley" action="/User/AddUser" method="post" role="form">
+                    @Html.AntiForgeryToken()
+                    <section class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label>用户帐号</label>
+                                <input type="text" class="form-control" data-required="true" id="UserID" name="UserID">
+                            </div>
+                            <div class="form-group">
+                                <label>用户名</label>
+                                <input type="text" class="form-control" data-required="true" id="UserName" name="UserName">
+                            </div>
+                            <div class="form-group pull-in clearfix">
+                                <div class="col-sm-6">
+                                    <label>密码</label>
+                                    <input type="password" class="form-control" data-required="true" data-rangelength="[6,100]" id="Password" name="Password">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>确认密码</label>
+                                    <input type="password" class="form-control" data-required="true" data-equalto="#Password" data-rangelength="[6,100]" id="ConfirmPassword" name="ConfirmPassword">
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="panel-footer text-right bg-light lter">
+                            <button type="submit" class="btn btn-success btn-s-xs">保存</button>
+                        </footer>
+                    </section>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--增加用户弹层结束-->
+<!--修改用户弹层-->
+<div class="modal fade" id="upModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:600px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="closeUpModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h5 class="modal-title" id="myModalLabel">编辑用户</h5>
+            </div>
+            <div class="modal-body" id="adddiv">
+                <form id="upData" data-validate="parsley" action="/User/UpdateUser" method="post" role="form">
+                    <section class="panel panel-default">
+                        <div class="panel-body">
+                            <input type="hidden" id="uid" name="ID" />
+                            <div class="form-group">
+                                <label>用户帐号</label>
+                                <input type="text" class="form-control" data-required="true" id="userID" name="userID">
+                            </div>
+                            <div class="form-group">
+                                <label>用户名</label>
+                                <input type="text" class="form-control" data-required="true" id="userName" name="userName">
+                            </div>
+                            <input type="hidden" id="isAdminVal" name="isAdmin" value="" />
+                            <div class="checkbox">
+                                <label class="checkbox-custom">
+                                    <input type="checkbox" id="isAdmin" name="isckAdmin">
+                                    <i class="fa fa-fw fa-square-o checked"></i>
+                                    <span id="stateShow"> 是否为管理员</span>
+                                </label>
+                            </div>
+                        </div>
+                        <footer class="panel-footer text-right bg-light lter">
+                            <button type="submit" class="btn btn-success btn-s-xs">保存</button>
+                        </footer>
+                    </section>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改用户弹层结束-->
