@@ -13,6 +13,7 @@ namespace Model
             : base("CLMContext")
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<CLMContext, Configuration>());
+            DbConfiguration.SetConfiguration(new EFConfiguration());
         }
 
         /// <summary>
